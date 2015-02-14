@@ -43,5 +43,7 @@ function main() {
     // instantiate my game container
     game = new createjs.Container();
 
+    // intiate my background
+    background = new createjs.Bitmap("assets/images/background.jpg");
     
 }
