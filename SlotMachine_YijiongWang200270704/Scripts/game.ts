@@ -7,14 +7,17 @@ var background: createjs.Bitmap;
 var betButton: createjs.Bitmap;
 var betMaxButton: createjs.Bitmap;
 var spinButton: createjs.Bitmap;
+var resetButton: createjs.Bitmap;
+var quitButton: createjs.Bitmap;
 var tiles: createjs.Bitmap[] = [];
 var tileContainers: createjs.Container[] = [];
+var defaultImages: createjs.Bitmap[] = [];
 
 // Game Variables
 var playerMoney: number = 1000;
 var MAXBET: number = 500;
 var playerBet: number = 0;
-var winnings: number = 0;
+var winnings: number = 0; // needs to be reset
 var jackpot: number = 5000;
 var turn = 0;
 var winNumber: number = 0;
@@ -65,23 +68,56 @@ function resetFruitTally() {
     bells = 0;
     sevens = 0;
     blanks = 0;
+    winnings = 0;
 }
 
 // Event handlers
-//bet button's event handlers
+function resetButtonClicked() {
+
+    for (var tile = 0; tile < 3; tile++) {
+        if (turn > 0) {
+            game.removeChild(tiles[tile]);
+        }
+        defaultImages[tile] = new createjs.Bitmap("assets/images/seven.png");
+        defaultImages[tile].x = 149 + (96 * tile);
+        defaultImages[tile].y = 100;
+        game.addChild(defaultImages[tile]);
+    }
+
+    playerMoney = 1000;
+    MAXBET = 500;
+    playerBet = 0;
+    winnings = 0; // needs to be reset
+    jackpot = 5000;
+    turn = 0;
+    winNumber = 0;
+    winRatio = 0;
+    lossNumber = 0;
+
+    betText.text = playerBet.toString();
+    totalCreditText.text = playerMoney.toString();
+    winnerPaidText.text = winnings.toString();
+}
+
+function quitButtonClicked() {
+    this.close();
+}
+
 function betButtonOver() {
-    console.log("bet button clicked");
+
 }
 
 function betButtonOut() {
-    console.log("bet button clicked");
+
 }
 
+
+//bet button's event handlers
 function betButtonClicked() {
     if (playerMoney > 0) {
         if (playerBet < MAXBET) {
             playerBet = playerBet + 1;
-            playerMoney = playerMoney - 1;
+            //playerMoney = playerMoney - 1;
         } else {
             playerBet = MAXBET;
             alert("Maximum bet");
@@ -97,17 +133,17 @@ function betButtonClicked() {
 
 //bet max button event handlers
 function betMaxButtonOver() {
-    console.log("bet max button clicked");
+
 }
 
 function betMaxButtonOut() {
-    console.log("bet max button clicked");
+
 }
 
 function betMaxButtonClicked() {
     if (playerMoney >= (MAXBET - playerBet)) {
         if (playerBet < MAXBET) {
-            playerMoney = playerMoney - (MAXBET - playerBet);
+            //playerMoney = playerMoney - (MAXBET - playerBet);
             playerBet = MAXBET;
         } else {
             playerBet = MAXBET;
@@ -124,30 +160,60 @@ function betMaxButtonClicked() {
 
 //spin button event handlers
 function spinButtonOver() {
-    console.log("spin button clicked");
+
 }
 
 function spinButtonOut() {
-    console.log("spin button clicked");
+
 }
 
 function spinButtonClicked() {
-    // Add spin reel code
-    spinResult = Reels();
-    fruits = spinResult[0] + " - " + spinResult[1] + " - " + spinResult[2];
+    if (playerBet > 0) {
+        if (playerBet <= playerMoney) {
+            // Add spin reel code
+            spinResult = Reels();
+            fruits = spinResult[0] + " - " + spinResult[1] + " - " + spinResult[2];
 
-    console.log(fruits);
+            console.log(fruits);
 
-    for (var tile = 0; tile < 3; tile++) {
-        if (turn > 0) {
-            game.removeChild(tiles[tile]);
+            // remove 777
+            for (var default_num = 0; default_num < 3; default_num++) {
+                game.removeChild(defaultImages[default_num]);
+            }
+
+            for (var tile = 0; tile < 3; tile++) {
+                if (turn > 0) {
+                    game.removeChild(tiles[tile]);
+                }
+                tiles[tile] = new createjs.Bitmap("assets/images/" + spinResult[tile] + ".png");
+                tiles[tile].x = 149 + (96 * tile);
+                tiles[tile].y = 100;
+                game.addChild(tiles[tile]);
+
+            }
+            determineWinnings();
+
+            console.log("win: " + winNumber + "    Lost: " + lossNumber);
+
+            //display winning amount
+            playerMoney = playerMoney + winnings;
+            winnerPaidText.text = winnings.toString();
+
+            //distract bet amount
+            playerMoney = playerMoney - playerBet;
+            totalCreditText.text = playerMoney.toString();
+
+            turn++;
+            resetFruitTally();
+        } else if (playerBet > playerMoney && playerMoney > 0) {
+            playerBet = playerMoney;
+            betText.text = playerBet.toString();
+
+        } else if (playerBet > playerMoney && playerMoney <= 0) {
+            alert("you don't have enough money to play! Game Over");
         }
-        tiles[tile] = new createjs.Bitmap("assets/images/" + spinResult[tile] + ".png");
-        tiles[tile].x = 149 + (96 * tile);
-        tiles[tile].y = 100;
-
-        game.addChild(tiles[tile]);
-        console.log(game.getNumChildren());
+    } else {
+        alert("Please Bet!");
     }
 }
 
@@ -172,7 +238,7 @@ function Reels() {
                 betLine[spin] = "blank";
                 blanks++;
                 break;
-            case checkRange(outCome[spin], 28, 37): // 15.4% probability
+            case checkRange(outCome[spin], 28, 37): // 15.4% probability  28  37
                 betLine[spin] = "grapes";
                 grapes++;
                 break;
@@ -204,6 +270,7 @@ function Reels() {
     }
     return betLine;
 }
+
 
 /* This function calculates the player's winnings, if any */
 function determineWinnings() {
@@ -258,11 +325,9 @@ function determineWinnings() {
             winnings = playerBet * 5;
         }
         winNumber++;
-        // showWinMessage();
     }
     else {
         lossNumber++;
-        //  showLossMessage();
     }
 
 }
@@ -296,9 +361,25 @@ function createUI():void {
     spinButton.x = 164;
     spinButton.y = 217;
     game.addChild(spinButton);
+    
     spinButton.addEventListener("mouseover", spinButtonOver);
     spinButton.addEventListener("mouseout", spinButtonOut);
     spinButton.addEventListener("click", spinButtonClicked);
+    
+
+    //reset button
+    resetButton = new createjs.Bitmap("assets/images/SpinButton.jpg");
+    resetButton.x = 301;
+    resetButton.y = 217;
+    game.addChild(resetButton);
+    resetButton.addEventListener("click", resetButtonClicked);
+
+    //quit button
+    quitButton = new createjs.Bitmap("assets/images/SpinButton.jpg");
+    quitButton.x = 369;
+    quitButton.y = 217;
+    game.addChild(quitButton);
+    quitButton.addEventListener("click", quitButtonClicked);
 
     // bet text
     betText = new createjs.Text(playerBet.toString(), "15px Impact", "#FF0000");
@@ -317,6 +398,13 @@ function createUI():void {
     winnerPaidText.x = 231;
     winnerPaidText.y = 187;
     game.addChild(winnerPaidText);
+
+    for (var tile = 0; tile < 3; tile++) {
+        defaultImages[tile] = new createjs.Bitmap("assets/images/seven.png");
+        defaultImages[tile].x = 149 + (96 * tile);
+        defaultImages[tile].y = 100;
+        game.addChild(defaultImages[tile]);
+    }
 
 }
 
