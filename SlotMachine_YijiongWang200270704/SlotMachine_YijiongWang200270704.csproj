@@ -74,8 +74,10 @@
     <Content Include="assets\images\BetMaxButton.jpg" />
     <Content Include="assets\images\blank.png" />
     <Content Include="assets\images\cherry.png" />
+    <Content Include="assets\images\ExitButton.jpg" />
     <Content Include="assets\images\grapes.png" />
     <Content Include="assets\images\orange.png" />
+    <Content Include="assets\images\ResetButton.jpg" />
     <Content Include="assets\images\seven.png" />
     <Content Include="assets\images\SlotMachine.jpg" />
     <Content Include="assets\images\SpinButton.jpg" />
@@ -119,7 +121,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>12288</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:12287/</IISUrl>
+          <IISUrl>http://localhost:12286/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

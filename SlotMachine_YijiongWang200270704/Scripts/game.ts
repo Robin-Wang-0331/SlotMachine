@@ -368,16 +368,16 @@ function createUI():void {
     
 
     //reset button
-    resetButton = new createjs.Bitmap("assets/images/SpinButton.jpg");
-    resetButton.x = 301;
-    resetButton.y = 217;
+    resetButton = new createjs.Bitmap("assets/images/ResetButton.jpg");
+    resetButton.x = 296;
+    resetButton.y = 218;
     game.addChild(resetButton);
     resetButton.addEventListener("click", resetButtonClicked);
 
     //quit button
-    quitButton = new createjs.Bitmap("assets/images/SpinButton.jpg");
-    quitButton.x = 369;
-    quitButton.y = 217;
+    quitButton = new createjs.Bitmap("assets/images/ExitButton.jpg");
+    quitButton.x = 364;
+    quitButton.y = 218;
     game.addChild(quitButton);
     quitButton.addEventListener("click", quitButtonClicked);
 
